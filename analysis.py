@@ -68,7 +68,7 @@ def get_corpus(docs_list, key_to_ind):
     return list_of_lists_of_tuples
     
 
-def get_Xy(corpus, labels):
+def get_Xy(corpus, labels, ndims):
     # Term frequency inverse document frequency (tfidf) weighting:
     # reflects how important a word is to a document in a corpus
 	tfidf = models.TfidfModel(corpus)
@@ -77,10 +77,10 @@ def get_Xy(corpus, labels):
 	##scipy_csc_matrix = matutils.corpus2csc(tfidf_corpus).toarray().transpose()	
 	# Builds an LSI space from the input TFIDF matrix, it uses SVD
 	# for dimensionality reduction with num_topics = dimensions
-	lsi = models.LsiModel(tfidf_corpus, num_topics=100)
+	lsi = models.LsiModel(tfidf_corpus, num_topics = ndims)
 	lsi_corpus = lsi[tfidf_corpus]
 	docs_lsi = [doc for doc in lsi_corpus]
-	X = matutils.corpus2dense(lsi_corpus, num_terms = 100).transpose()
+	X = matutils.corpus2dense(lsi_corpus, num_terms = ndims).transpose()
 	# Convert labels to: promoter: 0, enhancer: 1
 	y = []
 	error_ind = []
@@ -148,7 +148,7 @@ if __name__ == '__main__':
 	docs_list, set_of_keys = process_text(text_list, min_word_length, max_word_length, max_text_length)
 	key_to_ind, ind_to_key = keytoindex(set_of_keys)
 	corpus = get_corpus(docs_list, key_to_ind)
-	X, y = get_Xy(corpus, labels)
+	X, y = get_Xy(corpus, labels, 100)
 	train_model(X, y)
 	
 
